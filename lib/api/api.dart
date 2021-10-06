@@ -56,7 +56,7 @@ const authenticKey =
 // }
 
 class ApiManager {
-  static const String _baseUrl = "https://api.imagekit.io/v1/files";
+  final String _baseUrl = "https://api.imagekit.io/v1/files";
   final http.Client _client;
 
   ApiManager({http.Client? client}) : _client = client ?? http.Client();
@@ -66,16 +66,22 @@ class ApiManager {
   }
 
   Future<List<ImageModel>> getImages() async {
-    try {
-      // final url = 'https://api.imagekit.io/v1/files';
-      final response = await _client.get(
-        Uri.parse(_baseUrl),
-        headers: {
-          HttpHeaders.authorizationHeader: authenticKey,
-        },
-      );
-      if (response.statusCode == 200) {
-        try {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
+      print("connected out of scope-------------");
+
+      try {
+        final response = await _client.get(
+          Uri.parse(_baseUrl),
+          headers: {
+            HttpHeaders.authorizationHeader: authenticKey,
+          },
+        );
+        if (response.statusCode == 200) {
+          print("connected and 200-------------");
+
           final data = jsonDecode(response.body) as List<dynamic>;
           List<ImageModel> images = [];
           for (var u in data) {
@@ -83,17 +89,24 @@ class ApiManager {
             images.add(imag);
           }
           return images;
-        } catch (e) {
-          print(e);
-          throw const Failure(message: "Something went wrong");
+        } else {
+          throw Failure(message: "Something went wrong");
         }
-      } else {
-        print("errffffffffffff");
-        throw const Failure(message: "Something went wrong");
+      } on SocketException {
+        throw "NotConnected";
+      } on HttpException {
+        throw Failure(message: "post not availble");
+      } on FormatException {
+        throw Failure(message: "format err");
+      } catch (e) {
+        throw Failure(message: "Something went wrong");
       }
-    } catch (e) {
-      print(e);
-      throw const Failure(message: "Something went wrong");
+    } else if (connectivityResult == ConnectivityResult.none) {
+      print("not connected-------------");
+      throw "NotConnected";
+    } else {
+      throw "NotConnected";
     }
   }
+// }
 }

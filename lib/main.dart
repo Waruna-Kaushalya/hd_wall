@@ -3,11 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'routes/home_route.dart';
 import 'routes/image_preview_route.dart';
-
-import 'package:permission_handler/permission_handler.dart';
 
 Future main(List<String> args) async {
   await dotenv.load(fileName: ".env");

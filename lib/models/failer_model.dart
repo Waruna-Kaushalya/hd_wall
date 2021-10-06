@@ -1,5 +1,8 @@
 class Failure {
   final String message;
 
-  const Failure({required this.message});
+  Failure({required this.message});
+
+  @override
+  String toString() => message;
 }
