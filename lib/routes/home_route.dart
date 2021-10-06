@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hd_wall/api/api.dart';
+import 'package:hd_wall/models/image_model.dart';
 import 'package:hd_wall/widgets/image_gridview_widget.dart';
 import 'package:hd_wall/widgets/progress_indicator_widget.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -17,6 +18,7 @@ class HomeRoute extends StatefulWidget {
 }
 
 class _HomeRouteState extends State<HomeRoute> {
+  late Future<List<ImageModel>> _futureImages;
   Future<void> clearCache() async {
     await DefaultCacheManager().emptyCache();
     imageCache!.clear();
@@ -26,6 +28,7 @@ class _HomeRouteState extends State<HomeRoute> {
   @override
   void initState() {
     super.initState();
+    _futureImages = ApiManager().getImages();
 
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       setState(() {});
@@ -70,40 +73,45 @@ class _HomeRouteState extends State<HomeRoute> {
       ),
       body: Stack(
         children: [
-          FutureBuilder(
-            future: apiManager(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data != "NotConnected") {
-                return StaggeredGridViewWidget(
-                  snapData: snapshot.data,
-                );
-              } else if (snapshot.data == "NotConnected") {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                        alignment: Alignment.center,
-                        height: 30,
-                        color: Colors.red[400],
-                        child: const Text(
-                          "No Internet",
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        )),
-                    Container(
-                      height: height / 3,
-                    ),
-                    const Icon(
-                      Icons.wifi_off,
-                      size: 35,
-                    )
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return const Text("Error");
-              } else {
-                return const CircularProgressIndicatorWidget();
-              }
+          RefreshIndicator(
+            onRefresh: () async {
+              _futureImages = ApiManager().getImages();
             },
+            child: FutureBuilder(
+              future: _futureImages,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data != "NotConnected") {
+                  return StaggeredGridViewWidget(
+                    snapData: snapshot.data,
+                  );
+                } else if (snapshot.data == "NotConnected") {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                          alignment: Alignment.center,
+                          height: 30,
+                          color: Colors.red[400],
+                          child: const Text(
+                            "No Internet",
+                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          )),
+                      Container(
+                        height: height / 3,
+                      ),
+                      const Icon(
+                        Icons.wifi_off,
+                        size: 35,
+                      )
+                    ],
+                  );
+                } else if (snapshot.hasError) {
+                  return const Text("Error");
+                } else {
+                  return const CircularProgressIndicatorWidget();
+                }
+              },
+            ),
           ),
         ],
       ),

@@ -29,7 +29,7 @@ class StaggeredGridViewWidget extends StatelessWidget {
                 child: Hero(
                   tag: "tag$index",
                   child: CachedImage(
-                    imgUrl: "${snapData[index].imaUrl}?tr=h-300",
+                    imgUrl: "${snapData[index].imgUrl}?tr=h-300",
                   ),
                 ),
               ),
@@ -38,7 +38,7 @@ class StaggeredGridViewWidget extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => ImagePreviewRoute(
-                      image: snapData[index].imaUrl,
+                      image: snapData[index].imgUrl,
                       indexNumber: index,
                     ),
                   ),
