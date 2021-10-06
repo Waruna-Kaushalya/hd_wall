@@ -6,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hd_wall/api/api.dart';
 import 'package:hd_wall/widgets/image_gridview_widget.dart';
 import 'package:hd_wall/widgets/progress_indicator_widget.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomeRoute extends StatefulWidget {
   static const routeName = 'home_route';
@@ -40,8 +41,25 @@ class _HomeRouteState extends State<HomeRoute> {
         title: const Text("HDWall"),
         actions: [
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               clearCache();
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => CupertinoAlertDialog(
+                        title: Text('Camera Permission'),
+                        content: Text(
+                            'This app needs camera access to take pictures for upload user profile photo'),
+                        actions: <Widget>[
+                          CupertinoDialogAction(
+                            child: Text('Deny'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                          CupertinoDialogAction(
+                            child: Text('Settings'),
+                            onPressed: () => openAppSettings(),
+                          ),
+                        ],
+                      ));
             },
             child: const Text(
               "Clear Cache",

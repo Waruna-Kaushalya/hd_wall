@@ -1,5 +1,6 @@
 // import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hd_wall/models/image_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
@@ -7,10 +8,17 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-const authenticKey =
-    "Basic cHJpdmF0ZV9Yd1hjVDJKZjVIVm1KZlM3dWY4alBYRUswYWM9Og==";
+var key = dotenv.env["APIKEY"];
+var url = dotenv.env["APIURL"];
 
-const uriHeader = "https://api.imagekit.io/v1/files";
+// const authenticKey =
+//     "Basic cHJpdmF0ZV9Yd1hjVDJKZjVIVm1KZlM3dWY4alBYRUswYWM9Og==";
+
+// const uriHeader = "https://api.imagekit.io/v1/files";
+
+var authenticKey = "Basic $key";
+
+var uriHeader = url;
 
 Future apiManager() async {
   var connectivityResult = await (Connectivity().checkConnectivity());
@@ -21,7 +29,7 @@ Future apiManager() async {
       connectivityResult == ConnectivityResult.wifi) {
     try {
       final response = await http.get(
-        Uri.parse(uriHeader),
+        Uri.parse("$uriHeader"),
         headers: {
           HttpHeaders.authorizationHeader: authenticKey,
         },
