@@ -34,7 +34,7 @@ class _HomeRouteState extends State<HomeRoute> {
       appBar: AppBar(
         title: const Text("HDWall"),
         actions: [
-          TextButton(
+          RaisedButton(
             onPressed: () async {
               clearCache();
               showDialog(

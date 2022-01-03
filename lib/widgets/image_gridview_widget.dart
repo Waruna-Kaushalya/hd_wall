@@ -28,60 +28,66 @@ class _ImageGridViewWidgetState extends State<ImageGridViewWidget> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
-    return FutureBuilder(
-      future: ApiManager().getImages(),
-      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-        if (snapshot.hasData && snapshot.data != "NotConnected") {
-          return StaggeredGridViewWidget(
-            snapData: snapshot.data,
-          );
-        } else if (snapshot.hasError && snapshot.error == "NotConnected") {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                  alignment: Alignment.center,
-                  height: 30,
-                  color: Colors.red[400],
-                  child: const Text(
-                    "No Internet",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  )),
-              Container(
-                height: height / 3,
-              ),
-              const Icon(
-                Icons.wifi_off,
-                size: 35,
-              )
-            ],
-          );
-        } else if (snapshot.hasError) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                  alignment: Alignment.center,
-                  height: 30,
-                  color: Colors.red[400],
-                  child: const Text(
-                    "No Internet",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  )),
-              Container(
-                height: height / 3,
-              ),
-              const Icon(
-                Icons.wifi_off,
-                size: 35,
-              )
-            ],
-          );
-          ;
-        } else {
-          return const CircularProgressIndicatorWidget();
-        }
+    return RefreshIndicator(
+      onRefresh: () async {
+        // ApiManager().getImages();
+        setState(() {});
       },
+      child: FutureBuilder(
+        future: ApiManager().getImages(),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData && snapshot.data != "NotConnected") {
+            return StaggeredGridViewWidget(
+              snapData: snapshot.data,
+            );
+          } else if (snapshot.hasError && snapshot.error == "NotConnected") {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                    alignment: Alignment.center,
+                    height: 30,
+                    color: Colors.red[400],
+                    child: const Text(
+                      "No Internet",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    )),
+                Container(
+                  height: height / 3,
+                ),
+                const Icon(
+                  Icons.wifi_off,
+                  size: 35,
+                )
+              ],
+            );
+          } else if (snapshot.hasError) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                    alignment: Alignment.center,
+                    height: 30,
+                    color: Colors.red[400],
+                    child: const Text(
+                      "No Internet",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    )),
+                Container(
+                  height: height / 3,
+                ),
+                const Icon(
+                  Icons.wifi_off,
+                  size: 35,
+                )
+              ],
+            );
+            ;
+          } else {
+            return const CircularProgressIndicatorWidget();
+          }
+        },
+      ),
     );
   }
 }
